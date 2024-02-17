@@ -17,20 +17,6 @@ int addToArray(vector<int>& dynamicArray, int newNumber) {
     return 0;
 }
 
-int removeElement(vector<int>& dynamicArray, int position) {
-    if (position < 0 || position >= dynamicArray.size())
-        return -1;
-    dynamicArray.erase(dynamicArray.begin() + position);
-    return 0;
-}
-
-int findInArray(const vector<int>& dynamicArray, int toFindNumber) {
-    for (size_t i = 0; i < dynamicArray.size(); i++)
-        if (dynamicArray[i] == toFindNumber)
-            return i;
-    return -1;
-}
-
 int findLongestIncreasingSubsequence(const vector<int>& dynamicArray, int& start, int& end) {
     int maxLength = 1;
     int currentLength = 1;
@@ -78,11 +64,9 @@ int main() {
 
     cout << "1. Вывод массива\n"
         << "2. Добавить элемент\n"
-        << "3. Удалить элемент\n"
-        << "4. Найти элемент\n"
-        << "5. Найти индексы самой длинной упорядоченной по возрастанию подпоследовательности\n"
-        << "6. Вставить новый элемент перед элементом, с начальным индексом подпоследовательности\n"
-        << "7. Удалить все элементы найденной подпоследовательности\n"
+        << "3. Найти индексы самой длинной упорядоченной по возрастанию подпоследовательности\n"
+        << "4. Вставить новый элемент перед элементом, с начальным индексом подпоследовательности\n"
+        << "5. Удалить все элементы найденной подпоследовательности\n"
         << "0. выход\n";
 
     while (true) {
@@ -99,36 +83,19 @@ int main() {
             cout << "Элемент успешно добавлен\n";
             break;
         case '3':
-            cout << "Введите позицию: ";
-            cin >> tempNumber;
-            if (removeElement(dynamicArray, tempNumber) == -1)
-                cout << "Такого элемента нет\n";
-            else
-                cout << "Элемент успешно удален\n";
-            break;
-        case '4':
-            cout << "Введите число: ";
-            cin >> tempNumber;
-            result = findInArray(dynamicArray, tempNumber);
-            if (result == -1)
-                cout << "Элемент не найден\n";
-            else
-                cout << "Элемент " << tempNumber << " найден в позиции " << result << endl;
-            break;
-        case '5':
             length = findLongestIncreasingSubsequence(dynamicArray, start, end);
             if (length > 0)
                 cout << "Самая длинная упорядоченная подпоследовательность: " << length << " элементов, начиная с индекса " << start << " и заканчивая индексом " << end << endl;
             else
                 cout << "Упорядоченная подпоследовательность не найдена\n";
             break;
-        case '6':
+        case '4':
             cout << "Введите новый элемент: ";
             cin >> tempNumber;
             insertBeforeSubsequence(dynamicArray, tempNumber);
             cout << "Элемент успешно вставлен\n";
             break;
-        case '7':
+        case '5':
             if (removeSubsequence(dynamicArray) == -1)
                 cout << "Упорядоченная подпоследовательность не найдена\n";
             else
@@ -137,7 +104,13 @@ int main() {
         case '0':
             return 0;
         default:
-            cout << "Неверный ввод!" << endl;
+            cout << "Неверный ввод!\n"
+                << "1. Вывод массива\n"
+                << "2. Добавить элемент\n"
+                << "3. Найти индексы самой длинной упорядоченной по возрастанию подпоследовательности\n"
+                << "4. Вставить новый элемент перед элементом, с начальным индексом подпоследовательности\n"
+                << "5. Удалить все элементы найденной подпоследовательности\n"
+                << "0. выход\n";
             break;
         }
     }
