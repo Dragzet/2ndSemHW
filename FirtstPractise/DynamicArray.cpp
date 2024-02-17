@@ -1,5 +1,5 @@
 #include <iostream>
-#include <Windows.h>
+#include <windows.h>
 
 using namespace std;
 
@@ -12,12 +12,9 @@ int printArray(int* arrayToPrint, int size) {
 }
 
 int addToArray(int*& dynamicArray, int& size, int newNumber) {
-    int* newArray = new int[size + 1];
-    for (int i = 0; i < size; ++i)
-        newArray[i] = dynamicArray[i];
-    newArray[size++] = newNumber;
-    delete[] dynamicArray;
-    dynamicArray = newArray;
+    dynamicArray = (int*)realloc(dynamicArray, (size + 1) * sizeof(int));
+   
+    dynamicArray[size++] = newNumber;
     return 0;
 }
 
@@ -26,12 +23,9 @@ int removeElement(int*& dynamicArray, int& size, int position) {
         return -1;
     for (int i = position; i < size - 1; ++i)
         dynamicArray[i] = dynamicArray[i + 1];
+    dynamicArray = (int*)realloc(dynamicArray, (size - 1) * sizeof(int));
+    
     --size;
-    int* newArray = new int[size];
-    for (int i = 0; i < size; ++i)
-        newArray[i] = dynamicArray[i];
-    delete[] dynamicArray;
-    dynamicArray = newArray;
     return 0;
 }
 
@@ -65,18 +59,12 @@ int findLongestIncreasingSubsequence(int* dynamicArray, int size, int& start, in
 int insertBeforeSubsequence(int*& dynamicArray, int& size, int newNumber) {
     int start, end;
     findLongestIncreasingSubsequence(dynamicArray, size, start, end);
-    int* newArray = new int[size + 1];
-    int j = 0;
-    for (int i = 0; i < size + 1; ++i) {
-        if (i == start) {
-            newArray[i] = newNumber;
-        } else {
-            newArray[i] = dynamicArray[j++];
-        }
-    }
-    delete[] dynamicArray;
-    dynamicArray = newArray;
-    size++;
+    dynamicArray = (int*)realloc(dynamicArray, (size + 1) * sizeof(int));
+    
+    for (int i = size; i > start; --i)
+        dynamicArray[i] = dynamicArray[i - 1];
+    dynamicArray[start] = newNumber;
+    ++size;
     return 0;
 }
 
@@ -85,17 +73,11 @@ int removeSubsequence(int*& dynamicArray, int& size) {
     int length = findLongestIncreasingSubsequence(dynamicArray, size, start, end);
     if (length == 0)
         return -1;
-    int newSize = size - (end - start + 1);
-    int* newArray = new int[newSize];
-    int j = 0;
-    for (int i = 0; i < size; ++i) {
-        if (i < start || i > end) {
-            newArray[j++] = dynamicArray[i];
-        }
-    }
-    delete[] dynamicArray;
-    dynamicArray = newArray;
-    size = newSize;
+    for (int i = start; i <= end; ++i)
+        dynamicArray[i] = dynamicArray[i + end - start + 1];
+    dynamicArray = (int*)realloc(dynamicArray, (size - (end - start + 1)) * sizeof(int));
+    
+    size -= (end - start + 1);
     return 0;
 }
 
@@ -127,14 +109,16 @@ int main() {
         case '2':
             cout << "Введите число: ";
             cin >> tempNumber;
-            addToArray(dynamicArray, currentDynamicSize, tempNumber);
-            cout << "Элемент успешно добавлен\n";
+            if (addToArray(dynamicArray, currentDynamicSize, tempNumber) == -1)
+                cout << "Ошибка при добавлении элемента\n";
+            else
+                cout << "Элемент успешно добавлен\n";
             break;
         case '3':
             cout << "Введите позицию: ";
             cin >> tempNumber;
             if (removeElement(dynamicArray, currentDynamicSize, tempNumber) == -1)
-                cout << "Такого элемента нет\n";
+                cout << "Ошибка при удалении элемента\n";
             else
                 cout << "Элемент успешно удален\n";
             break;
@@ -157,8 +141,10 @@ int main() {
         case '6':
             cout << "Введите новый элемент: ";
             cin >> tempNumber;
-            insertBeforeSubsequence(dynamicArray, currentDynamicSize, tempNumber);
-            cout << "Элемент успешно вставлен\n";
+            if (insertBeforeSubsequence(dynamicArray, currentDynamicSize, tempNumber) == -1)
+                cout << "Ошибка при вставке элемента\n";
+            else
+                cout << "Элемент успешно вставлен\n";
             break;
         case '7':
             if (removeSubsequence(dynamicArray, currentDynamicSize) == -1)
@@ -167,7 +153,7 @@ int main() {
                 cout << "Упорядоченная подпоследовательность удалена\n";
             break;
         case '0':
-            delete[] dynamicArray; 
+            free(dynamicArray); 
             return 0;
         default:
             cout << "Неверный ввод!" << endl;
